@@ -5,6 +5,7 @@ import (
   "log"
   "bufio"
   "os"
+  "io/ioutil"
   "./top"
   "./output"
 )
@@ -23,7 +24,13 @@ func (i *arrayFlags) Set(value string) error {
 var locations arrayFlags
 
 func main() {
-  token := flag.String("token", "", "Github auth token")
+  secret, err := ioutil.ReadFile("secret")
+
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  token := flag.String("token", string(secret)[:len(secret)-1], "Github auth token")
   amount := flag.Int("amount", 256, "Amount of users to show")
   considerNum := flag.Int("consider", 1000, "Amount of users to consider")
   outputOpt := flag.String("output", "plain", "Output format: plain, csv")
@@ -34,7 +41,7 @@ func main() {
   flag.Parse()
 
   if *preset != "" {
-  locations = Preset(*preset)
+    locations = Preset(*preset)
   }
 
   data, err := top.GithubTop(top.TopOptions { Token: *token, Locations: locations, Amount: *amount, ConsiderNum: *considerNum })
