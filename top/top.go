@@ -8,8 +8,8 @@ import (
   "strings"
   "log"
   "time"
-  "github.com/lauripiispanen/most-active-github-users-counter/github"
-  "github.com/lauripiispanen/most-active-github-users-counter/net"
+  "../github"
+  "../net"
 )
 
 var companyLogin = regexp.MustCompile(`^\@([a-zA-Z0-9]+)$`)

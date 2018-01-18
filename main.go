@@ -5,8 +5,8 @@ import (
   "log"
   "bufio"
   "os"
-  "github.com/lauripiispanen/most-active-github-users-counter/top"
-  "github.com/lauripiispanen/most-active-github-users-counter/output"
+  "./top"
+  "./output"
 )
 
 type arrayFlags []string
