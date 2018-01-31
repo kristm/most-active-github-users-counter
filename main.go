@@ -33,8 +33,8 @@ func main() {
   token := flag.String("token", string(secret)[:len(secret)-1], "Github auth token")
   amount := flag.Int("amount", 256, "Amount of users to show")
   considerNum := flag.Int("consider", 1000, "Amount of users to consider")
-  outputOpt := flag.String("output", "plain", "Output format: plain, csv")
-  fileName := flag.String("file", "", "Output file (optional, defaults to stdout)")
+  outputOpt := flag.String("output", "csv", "Output format: plain, csv")
+  fileName := flag.String("file", "most-active-github-users-ph", "Output file (optional, defaults to stdout)")
   preset := flag.String("preset", "philippines", "Preset (optional)")
 
   flag.Var(&locations, "location", "Location to query")
