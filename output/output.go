@@ -26,17 +26,18 @@ func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
 
 func CsvOutput(data top.GithubDataPieces, writer io.Writer) error {
   w := csv.NewWriter(writer)
-  if err := w.Write([]string{"rank", "name", "login", "contributions", "company", "organizations"}); err != nil {
+  if err := w.Write([]string{"rank", "name", "login", "email", "contributions", "company", "organizations"}); err != nil {
     return err
   }
   for i, piece := range data {
     rank := strconv.Itoa(i + 1)
     name := piece.User.Name
     login := piece.User.Login
+    email := piece.User.Email
     contribs := strconv.Itoa(piece.Contributions)
     orgs := strings.Join(piece.Organizations, ",")
     company := piece.User.Company
-    if err := w.Write([]string{ rank, name, login, contribs, company, orgs }); err != nil {
+    if err := w.Write([]string{ rank, name, login, email, contribs, company, orgs }); err != nil {
       return err
     }
   }

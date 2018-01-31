@@ -202,6 +202,7 @@ type User struct {
   Login        string
   Id           int
   Name         string
+  Email        string
   Location     string
   Company      string
   Followers    int
