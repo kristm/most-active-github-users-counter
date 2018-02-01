@@ -15,7 +15,7 @@ type OutputFormat func(data top.GithubDataPieces, writer io.Writer) error
 func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
   fmt.Fprintln(writer, "USERS\n--------")
   for i, piece := range data {
-    fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","))
+    fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v repos: %d %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(piece.Repos, ","))
   }
   fmt.Fprintln(writer, "\nORGANIZATIONS\n--------")
   for i, org := range data.TopOrgs(10) {
@@ -26,7 +26,7 @@ func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
 
 func CsvOutput(data top.GithubDataPieces, writer io.Writer) error {
   w := csv.NewWriter(writer)
-  if err := w.Write([]string{"rank", "name", "login", "email", "contributions", "company", "organizations"}); err != nil {
+  if err := w.Write([]string{"rank", "name", "login", "email", "contributions", "repos", "company", "organizations"}); err != nil {
     return err
   }
   for i, piece := range data {
@@ -36,8 +36,9 @@ func CsvOutput(data top.GithubDataPieces, writer io.Writer) error {
     email := piece.User.Email
     contribs := strconv.Itoa(piece.Contributions)
     orgs := strings.Join(piece.Organizations, ",")
+    repos := strings.Join(piece.Repos, ",")
     company := piece.User.Company
-    if err := w.Write([]string{ rank, name, login, email, contribs, company, orgs }); err != nil {
+    if err := w.Write([]string{ rank, name, login, email, contribs, repos, company, orgs }); err != nil {
       return err
     }
   }

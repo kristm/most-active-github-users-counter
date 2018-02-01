@@ -168,6 +168,29 @@ func (client HttpGithubClient) NumContributions(login string) (int, error) {
   return count, err
 }
 
+func (client HttpGithubClient) Repos(login string) ([]string, error) {
+  url := fmt.Sprintf("https://api.github.com/users/%s/repos", login)
+  body, err := client.Request(url)
+  if err != nil {
+    log.Fatalf("error requesting organizations for user %+v", login)
+    return []string{}, err
+  }
+  repoResp := []RepoResponse {}
+  err = json.Unmarshal(body, &repoResp)
+  if err != nil {
+    log.Fatalf("error parsing repositories JSON for user %+v", login)
+    return []string{}, err
+  }
+  log.Printf("%+v\n", repoResp)
+  repos := []string{}
+
+  for _, repo := range repoResp {
+    repos = append(repos, repo.Repo)
+  }
+
+  return repos, err
+}
+
 func (client HttpGithubClient) Organizations(login string) ([]string, error) {
   url := fmt.Sprintf("https://api.github.com/users/%s/orgs", login)
   body, err := client.Request(url)
@@ -192,6 +215,11 @@ func (client HttpGithubClient) Organizations(login string) ([]string, error) {
 
 type OrgResponse struct {
   Organization  string `json:"login"`
+}
+
+type RepoResponse struct {
+  Repo string `json:"name"`
+  Watchers int `json:"stargazers_count"`
 }
 
 func NewGithubClient(wrappers ...net.Wrapper) HttpGithubClient {

@@ -85,7 +85,13 @@ func GithubTop(options TopOptions) (GithubDataPieces, error) {
         log.Fatal(err)
       }
 
-      pieces <- GithubDataPiece{ User: u, Contributions: user.Contributions, Organizations: orgs }
+      repos, err := client.Repos(user.Username)
+      if err != nil {
+        log.Fatal(err)
+      }
+
+      // TODO: iterate over each repos to get language stats
+      pieces <- GithubDataPiece{ User: u, Contributions: user.Contributions, Organizations: orgs, Repos: repos }
     }(user)
 
     <- throttle
@@ -126,6 +132,7 @@ type GithubDataPiece struct {
   User          github.User
   Contributions int
   Organizations []string
+  Repos []string
 }
 
 type GithubDataPieces []GithubDataPiece
