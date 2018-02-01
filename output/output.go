@@ -23,10 +23,33 @@ func RepoNames(data []core.RepoResponse) []string {
   return repoNames
 }
 
+type UserMoreStats struct {
+  NumOriginalRepos int
+  NumForkedRepos int
+  TotalRepos int
+  Languages []string
+}
+
+func ParseRepo(data []core.RepoResponse) UserMoreStats {
+  userStats := UserMoreStats{NumOriginalRepos: 0, NumForkedRepos: 0, TotalRepos: len(data)}
+
+  for i, repo := range data {
+    if repo.Fork {
+      userStats.NumForkedRepos += 1
+    } else {
+      userStats.NumOriginalRepos += 1
+    }
+    i++
+  }
+
+  return userStats
+}
+
 func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
   fmt.Fprintln(writer, "USERS\n--------")
   for i, piece := range data {
     fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v repos: %d %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(RepoNames(piece.Repos), ","))
+    fmt.Fprintf(writer, "MORE STATS %+v\n", ParseRepo(piece.Repos))
   }
   fmt.Fprintln(writer, "\nORGANIZATIONS\n--------")
   for i, org := range data.TopOrgs(10) {
