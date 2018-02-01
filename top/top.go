@@ -91,18 +91,31 @@ func GithubTop(options TopOptions) (GithubDataPieces, error) {
         log.Fatal(err)
       }
 
-      userLanguages := []string{}
+      userLanguages := make(map[string]int)
       for _, repo := range repos {
         languages, err := client.Languages(user.Username, repo.Repo)
         if err != nil {
           log.Fatal(err)
         }
         log.Printf("%+v\n", languages)
-        userLanguages = append(userLanguages, languages...)
+
+        for _, lang := range languages {
+          _, present := userLanguages[lang]
+          if present {
+            userLanguages[lang] += 1
+          } else {
+            userLanguages[lang] = 1
+          }
+        }
+      }
+
+      languagesList := []string{}
+      for key, _ := range userLanguages {
+        languagesList = append(languagesList, key)
       }
 
       // TODO: iterate over each repos to get language stats
-      pieces <- GithubDataPiece{ User: u, Contributions: user.Contributions, Organizations: orgs, Repos: repos, Languages: userLanguages }
+      pieces <- GithubDataPiece{ User: u, Contributions: user.Contributions, Organizations: orgs, Repos: repos, Languages: languagesList }
     }(user)
 
     <- throttle
