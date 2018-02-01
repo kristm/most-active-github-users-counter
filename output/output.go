@@ -48,7 +48,7 @@ func ParseRepo(data []core.RepoResponse) UserMoreStats {
 func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
   fmt.Fprintln(writer, "USERS\n--------")
   for i, piece := range data {
-    fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v repos: %d %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(RepoNames(piece.Repos), ","))
+    fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v repos: %d %+v %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(RepoNames(piece.Repos), ","), strings.Join(piece.Languages, ","))
     fmt.Fprintf(writer, "MORE STATS %+v\n", ParseRepo(piece.Repos))
   }
   fmt.Fprintln(writer, "\nORGANIZATIONS\n--------")

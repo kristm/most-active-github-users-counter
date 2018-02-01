@@ -169,11 +169,36 @@ func (client HttpGithubClient) NumContributions(login string) (int, error) {
   return count, err
 }
 
+func (client HttpGithubClient) Languages(login string, repo string) ([]string, error) {
+  url := fmt.Sprintf("https://api.github.com/repos/%s/%s/languages", login, repo)
+  body, err := client.Request(url)
+  if err != nil {
+    log.Fatalf("error requesting languages for user %+v in repo %+v", login, repo)
+    return []string{}, err
+  }
+
+  var f interface{}
+  err = json.Unmarshal(body, &f)
+  if err != nil {
+    log.Fatalf("error parsing languages JSON for user %+v", login)
+    return []string{}, err
+  }
+
+  itemsMap := f.(map[string]interface{})
+  languages := []string{}
+
+  for lang := range itemsMap {
+    languages = append(languages, lang)
+  }
+
+  return languages, err
+}
+
 func (client HttpGithubClient) Repos(login string) ([]core.RepoResponse, error) {
   url := fmt.Sprintf("https://api.github.com/users/%s/repos", login)
   body, err := client.Request(url)
   if err != nil {
-    log.Fatalf("error requesting organizations for user %+v", login)
+    log.Fatalf("error requesting repos for user %+v", login)
     return []core.RepoResponse{}, err
   }
   repoResp := []core.RepoResponse {}
@@ -182,7 +207,7 @@ func (client HttpGithubClient) Repos(login string) ([]core.RepoResponse, error) 
     log.Fatalf("error parsing repositories JSON for user %+v", login)
     return []core.RepoResponse{}, err
   }
-  log.Printf("%+v\n", repoResp)
+
   repos := []core.RepoResponse {}
 
   for _, repo := range repoResp {
