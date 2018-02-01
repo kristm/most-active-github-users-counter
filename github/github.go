@@ -10,6 +10,7 @@ import (
   "log"
   "time"
   "../net"
+  "../core"
 )
 
 const root string = "https://api.github.com/"
@@ -168,24 +169,24 @@ func (client HttpGithubClient) NumContributions(login string) (int, error) {
   return count, err
 }
 
-func (client HttpGithubClient) Repos(login string) ([]string, error) {
+func (client HttpGithubClient) Repos(login string) ([]core.RepoResponse, error) {
   url := fmt.Sprintf("https://api.github.com/users/%s/repos", login)
   body, err := client.Request(url)
   if err != nil {
     log.Fatalf("error requesting organizations for user %+v", login)
-    return []string{}, err
+    return []core.RepoResponse{}, err
   }
-  repoResp := []RepoResponse {}
+  repoResp := []core.RepoResponse {}
   err = json.Unmarshal(body, &repoResp)
   if err != nil {
     log.Fatalf("error parsing repositories JSON for user %+v", login)
-    return []string{}, err
+    return []core.RepoResponse{}, err
   }
   log.Printf("%+v\n", repoResp)
-  repos := []string{}
+  repos := []core.RepoResponse {}
 
   for _, repo := range repoResp {
-    repos = append(repos, repo.Repo)
+    repos = append(repos, repo)
   }
 
   return repos, err
@@ -217,10 +218,11 @@ type OrgResponse struct {
   Organization  string `json:"login"`
 }
 
-type RepoResponse struct {
-  Repo string `json:"name"`
-  Watchers int `json:"stargazers_count"`
-}
+//type RepoResponse struct {
+//  Repo string `json:"name"`
+//  Watchers int `json:"stargazers_count"`
+//  Fork bool `json:"fork"`
+//}
 
 func NewGithubClient(wrappers ...net.Wrapper) HttpGithubClient {
   return HttpGithubClient { wrappers: wrappers }

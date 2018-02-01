@@ -8,14 +8,25 @@ import (
   "strings"
   "time"
   "../top"
+  "../core"
 )
 
 type OutputFormat func(data top.GithubDataPieces, writer io.Writer) error
 
+func RepoNames(data []core.RepoResponse) []string {
+  repoNames := make([]string, len(data))
+  for i, repo := range data {
+    repoNames[i] = repo.Repo
+    i++
+  }
+
+  return repoNames
+}
+
 func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
   fmt.Fprintln(writer, "USERS\n--------")
   for i, piece := range data {
-    fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v repos: %d %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(piece.Repos, ","))
+    fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v repos: %d %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(RepoNames(piece.Repos), ","))
   }
   fmt.Fprintln(writer, "\nORGANIZATIONS\n--------")
   for i, org := range data.TopOrgs(10) {
@@ -36,7 +47,7 @@ func CsvOutput(data top.GithubDataPieces, writer io.Writer) error {
     email := piece.User.Email
     contribs := strconv.Itoa(piece.Contributions)
     orgs := strings.Join(piece.Organizations, ",")
-    repos := strings.Join(piece.Repos, ",")
+    repos := strings.Join(RepoNames(piece.Repos), ",")
     company := piece.User.Company
     if err := w.Write([]string{ rank, name, login, email, contribs, repos, company, orgs }); err != nil {
       return err

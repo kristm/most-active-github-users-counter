@@ -10,6 +10,7 @@ import (
   "time"
   "../github"
   "../net"
+  "../core"
 )
 
 var companyLogin = regexp.MustCompile(`^\@([a-zA-Z0-9]+)$`)
@@ -132,7 +133,7 @@ type GithubDataPiece struct {
   User          github.User
   Contributions int
   Organizations []string
-  Repos []string
+  Repos []core.RepoResponse
 }
 
 type GithubDataPieces []GithubDataPiece
