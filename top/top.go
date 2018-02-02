@@ -97,7 +97,6 @@ func GithubTop(options TopOptions) (GithubDataPieces, error) {
         if err != nil {
           log.Fatal(err)
         }
-        log.Printf("%+v\n", languages)
 
         for _, lang := range languages {
           _, present := userLanguages[lang]

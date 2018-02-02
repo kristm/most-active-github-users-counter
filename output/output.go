@@ -7,6 +7,7 @@ import (
   "encoding/csv"
   "strings"
   "time"
+  "sort"
   "../top"
   "../core"
 )
@@ -27,11 +28,30 @@ type UserMoreStats struct {
   NumOriginalRepos int
   NumForkedRepos int
   TotalRepos int
-  Languages map[string]int
+  Languages []LanguageStats
 }
 
+type LanguageStats struct {
+  Lang string
+  RepoCount int
+
+}
+
+type LanguageData []LanguageStats
+func (p LanguageData) Len() int { return len(p) }
+func (p LanguageData) Less(i, j int) bool { return p[i].RepoCount < p[j].RepoCount }
+func (p LanguageData) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+
 func ParseRepo(data []core.RepoResponse, languages map[string]int) UserMoreStats {
-  userStats := UserMoreStats{NumOriginalRepos: 0, NumForkedRepos: 0, TotalRepos: len(data), Languages: languages}
+  languageStats := make(LanguageData, len(languages))
+  i := 0
+  for k, v := range languages {
+    languageStats[i] = LanguageStats{k, v}
+    i++
+  }
+  sort.Sort(sort.Reverse(languageStats))
+
+  userStats := UserMoreStats{NumOriginalRepos: 0, NumForkedRepos: 0, TotalRepos: len(data), Languages: languageStats}
 
   for i, repo := range data {
     if repo.Fork {
