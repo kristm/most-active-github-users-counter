@@ -109,13 +109,13 @@ func GithubTop(options TopOptions) (GithubDataPieces, error) {
         }
       }
 
-      languagesList := []string{}
-      for key, _ := range userLanguages {
-        languagesList = append(languagesList, key)
-      }
+      //languagesList := []string{}
+      //for key, _ := range userLanguages {
+      //  languagesList = append(languagesList, key)
+      //}
 
       // TODO: iterate over each repos to get language stats
-      pieces <- GithubDataPiece{ User: u, Contributions: user.Contributions, Organizations: orgs, Repos: repos, Languages: languagesList }
+      pieces <- GithubDataPiece{ User: u, Contributions: user.Contributions, Organizations: orgs, Repos: repos, Languages: userLanguages }
     }(user)
 
     <- throttle
@@ -157,7 +157,7 @@ type GithubDataPiece struct {
   Contributions int
   Organizations []string
   Repos []core.RepoResponse
-  Languages []string
+  Languages map[string]int
 }
 
 type GithubDataPieces []GithubDataPiece

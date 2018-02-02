@@ -27,11 +27,11 @@ type UserMoreStats struct {
   NumOriginalRepos int
   NumForkedRepos int
   TotalRepos int
-  Languages []string
+  Languages map[string]int
 }
 
-func ParseRepo(data []core.RepoResponse) UserMoreStats {
-  userStats := UserMoreStats{NumOriginalRepos: 0, NumForkedRepos: 0, TotalRepos: len(data)}
+func ParseRepo(data []core.RepoResponse, languages map[string]int) UserMoreStats {
+  userStats := UserMoreStats{NumOriginalRepos: 0, NumForkedRepos: 0, TotalRepos: len(data), Languages: languages}
 
   for i, repo := range data {
     if repo.Fork {
@@ -48,8 +48,8 @@ func ParseRepo(data []core.RepoResponse) UserMoreStats {
 func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
   fmt.Fprintln(writer, "USERS\n--------")
   for i, piece := range data {
-    fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v repos: %d %+v %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(RepoNames(piece.Repos), ","), strings.Join(piece.Languages, ","))
-    fmt.Fprintf(writer, "MORE STATS %+v\n", ParseRepo(piece.Repos))
+    fmt.Fprintf(writer, "#%+v: %+v (%+v):%+v (%+v) %+v repos: %d %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(RepoNames(piece.Repos), ","))
+    fmt.Fprintf(writer, "MORE STATS %+v\n", ParseRepo(piece.Repos, piece.Languages))
   }
   fmt.Fprintln(writer, "\nORGANIZATIONS\n--------")
   for i, org := range data.TopOrgs(10) {
