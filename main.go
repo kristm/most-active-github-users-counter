@@ -5,6 +5,7 @@ import (
   "log"
   "bufio"
   "os"
+  "fmt"
   "io/ioutil"
   "./top"
   "./output"
@@ -21,21 +22,41 @@ func (i *arrayFlags) Set(value string) error {
     return nil
 }
 
+func contains(arr []string, str string) bool {
+   for _, a := range arr {
+      if a == str {
+         return true
+      }
+   }
+   return false
+}
+
+func targetOutput(location string) (string, string) {
+  if contains(os.Args, "--csv") {
+    return "csv", fmt.Sprintf("%s-%s.csv", os.Args[0], location)
+  } else {
+    return "plain", ""
+  }
+}
+
 var locations arrayFlags
 
 func main() {
   secret, err := ioutil.ReadFile("secret")
-
   if err != nil {
     log.Fatal(err)
   }
 
+  targetLocation := func () string { if len(os.Args) >= 2 { return os.Args[1] } else { return "default" } }()
+  targetOutput, targetFile := targetOutput(targetLocation)
+  log.Printf("output %s to %s", targetOutput, targetFile)
+
   token := flag.String("token", string(secret)[:len(secret)-1], "Github auth token")
-  amount := flag.Int("amount", 256, "Amount of users to show")
-  considerNum := flag.Int("consider", 1000, "Amount of users to consider")
-  outputOpt := flag.String("output", "csv", "Output format: plain, csv")
-  fileName := flag.String("file", "most-active-github-users-ph", "Output file (optional, defaults to stdout)")
-  preset := flag.String("preset", "philippines", "Preset (optional)")
+  amount := flag.Int("amount", 20, "Amount of users to show")
+  considerNum := flag.Int("consider", 100, "Amount of users to consider")
+  outputOpt := flag.String("output", targetOutput, "Output format: plain, csv")
+  fileName := flag.String("file", targetFile, "Output file (optional, defaults to stdout)")
+  preset := flag.String("preset", targetLocation, "Preset (optional)")
 
   flag.Var(&locations, "location", "Location to query")
   flag.Parse()

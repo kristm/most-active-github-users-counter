@@ -108,12 +108,6 @@ func GithubTop(options TopOptions) (GithubDataPieces, error) {
         }
       }
 
-      //languagesList := []string{}
-      //for key, _ := range userLanguages {
-      //  languagesList = append(languagesList, key)
-      //}
-
-      // TODO: iterate over each repos to get language stats
       pieces <- GithubDataPiece{ User: u, Contributions: user.Contributions, Organizations: orgs, Repos: repos, Languages: userLanguages }
     }(user)
 
