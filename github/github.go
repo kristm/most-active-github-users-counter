@@ -244,12 +244,6 @@ type OrgResponse struct {
   Organization  string `json:"login"`
 }
 
-//type RepoResponse struct {
-//  Repo string `json:"name"`
-//  Watchers int `json:"stargazers_count"`
-//  Fork bool `json:"fork"`
-//}
-
 func NewGithubClient(wrappers ...net.Wrapper) HttpGithubClient {
   return HttpGithubClient { wrappers: wrappers }
 }
@@ -260,6 +254,7 @@ type User struct {
   Name         string
   Email        string
   AvatarUrl    string `json:"avatar_url"`
+  HtmlUrl      string `json:"html_url"`
   Location     string
   Company      string
   Followers    int

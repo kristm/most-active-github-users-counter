@@ -39,7 +39,7 @@ func main() {
   }
 
   token := flag.String("token", string(secret)[:len(secret)-1], "Github auth token")
-  amount := flag.Int("amount", 250, "Amount of users to show")
+  amount := flag.Int("amount", 100, "Amount of users to show")
   considerNum := flag.Int("consider", 1000, "Amount of users to consider")
   outputOpt := flag.String("output", "plain", "Output format: plain, csv")
   fileName := flag.String("file", "", "Output file (optional, defaults to stdout)")

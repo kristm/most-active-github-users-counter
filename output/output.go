@@ -84,20 +84,29 @@ func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
 
 func CsvOutput(data top.GithubDataPieces, writer io.Writer) error {
   w := csv.NewWriter(writer)
-  if err := w.Write([]string{"rank", "name", "login", "email", "avatar_url", "contributions", "repos", "company", "organizations"}); err != nil {
+  if err := w.Write([]string{"rank", "name", "login", "email", "location", "avatar_url", "contributions", "repos", "forked/total repos", "company", "organizations", "languages", "github url"}); err != nil {
     return err
   }
   for i, piece := range data {
+    stats := ParseRepo(piece.Repos, piece.Languages)
+    rankedLanguages := []string{}
+    for _, lang := range stats.Languages {
+      rankedLanguages = append(rankedLanguages, lang.Lang)
+    }
     rank := strconv.Itoa(i + 1)
     name := piece.User.Name
     login := piece.User.Login
     email := piece.User.Email
+    location := piece.User.Location
     avatarUrl := piece.User.AvatarUrl
+    htmlUrl := piece.User.HtmlUrl
     contribs := strconv.Itoa(piece.Contributions)
     orgs := strings.Join(piece.Organizations, ",")
     repos := strings.Join(RepoNames(piece.Repos), ",")
+    repoCount := fmt.Sprintf("%d/%d", stats.NumForkedRepos, stats.TotalRepos)
+    languages := strings.Join(rankedLanguages, ",")
     company := piece.User.Company
-    if err := w.Write([]string{ rank, name, login, email, avatarUrl, contribs, repos, company, orgs }); err != nil {
+    if err := w.Write([]string{ rank, name, login, email, location, avatarUrl, contribs, repos, repoCount, company, orgs, languages, htmlUrl }); err != nil {
       return err
     }
   }
