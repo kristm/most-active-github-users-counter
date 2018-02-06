@@ -53,6 +53,7 @@ func (client HttpGithubClient) User(login string) (User, error) {
   if err := json.Unmarshal(body, &user); err != nil {
     return User {}, err
   }
+
   return user, nil
 }
 
@@ -258,7 +259,7 @@ type User struct {
   Id           int
   Name         string
   Email        string
-  AvatarUrl    string
+  AvatarUrl    string `json:"avatar_url"`
   Location     string
   Company      string
   Followers    int

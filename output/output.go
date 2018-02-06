@@ -72,7 +72,7 @@ func ParseRepo(data []core.RepoResponse, languages map[string]int) UserMoreStats
 func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
   fmt.Fprintln(writer, "USERS\n--------")
   for i, piece := range data {
-    fmt.Fprintf(writer, "#%+v: %+v (%+v, %+v):%+v (%+v) %+v repos: %d %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.User.Email, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), len(piece.Repos), strings.Join(RepoNames(piece.Repos), ","))
+    fmt.Fprintf(writer, "#%+v: %+v (%+v, %+v):%+v (%+v) %+v %v repos: %d %+v\n", i + 1, piece.User.Name, piece.User.Login, piece.User.Email, piece.Contributions, piece.User.Company, strings.Join(piece.Organizations, ","), piece.User.AvatarUrl, len(piece.Repos), strings.Join(RepoNames(piece.Repos), ","))
     fmt.Fprintf(writer, "MORE STATS %+v\n", ParseRepo(piece.Repos, piece.Languages))
   }
   fmt.Fprintln(writer, "\nORGANIZATIONS\n--------")
@@ -84,7 +84,7 @@ func PlainOutput(data top.GithubDataPieces, writer io.Writer) error {
 
 func CsvOutput(data top.GithubDataPieces, writer io.Writer) error {
   w := csv.NewWriter(writer)
-  if err := w.Write([]string{"rank", "name", "login", "email", "contributions", "repos", "company", "organizations"}); err != nil {
+  if err := w.Write([]string{"rank", "name", "login", "email", "avatar_url", "contributions", "repos", "company", "organizations"}); err != nil {
     return err
   }
   for i, piece := range data {
@@ -92,11 +92,12 @@ func CsvOutput(data top.GithubDataPieces, writer io.Writer) error {
     name := piece.User.Name
     login := piece.User.Login
     email := piece.User.Email
+    avatarUrl := piece.User.AvatarUrl
     contribs := strconv.Itoa(piece.Contributions)
     orgs := strings.Join(piece.Organizations, ",")
     repos := strings.Join(RepoNames(piece.Repos), ",")
     company := piece.User.Company
-    if err := w.Write([]string{ rank, name, login, email, contribs, repos, company, orgs }); err != nil {
+    if err := w.Write([]string{ rank, name, login, email, avatarUrl, contribs, repos, company, orgs }); err != nil {
       return err
     }
   }
