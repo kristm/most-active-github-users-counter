@@ -4,7 +4,9 @@ import (
   "flag"
   "log"
   "bufio"
+  "fmt"
   "os"
+  "path/filepath"
   "io/ioutil"
   "./top"
   "./output"
@@ -33,7 +35,13 @@ func contains(arr []string, str string) bool {
 var locations arrayFlags
 
 func main() {
-  secret, err := ioutil.ReadFile("secret")
+  ex, err := os.Executable()
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  currentPath := filepath.Dir(ex)
+  secret, err := ioutil.ReadFile(fmt.Sprintf("%s/secret", currentPath))
   if err != nil {
     log.Fatal(err)
   }
