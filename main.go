@@ -6,6 +6,7 @@ import (
   "bufio"
   "fmt"
   "os"
+  "strings"
   "path/filepath"
   "io/ioutil"
   "./top"
@@ -58,6 +59,11 @@ func main() {
 
   if *preset != "" {
     locations = Preset(*preset)
+    places := []string{}
+    for _, location := range locations {
+      places = append(places, location)
+    }
+    log.Printf("Starting query for top %d in %s\n", *amount, strings.Join(places, ", "))
   }
 
   data, err := top.GithubTop(top.TopOptions { Token: *token, Locations: locations, Amount: *amount, ConsiderNum: *considerNum })

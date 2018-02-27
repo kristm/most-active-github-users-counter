@@ -97,7 +97,7 @@ func (client HttpGithubClient) SearchUsers(query UserSearchQuery) ([]string, err
 
       url := fmt.Sprintf("%ssearch/users?%s", root, q)
 
-      fmt.Printf("%s\n", url)
+      // fmt.Printf("%s\n", url)
 
       body, err := client.Request(url)
       if err != nil {
@@ -119,7 +119,7 @@ func (client HttpGithubClient) SearchUsers(query UserSearchQuery) ([]string, err
         total_count = total
         items = m["items"].([]interface{})
 
-        fmt.Printf("Established total count %+v for page %+v\n", total_count, currentPage)
+        // fmt.Printf("Established total count %+v for page %+v\n", total_count, currentPage)
         if (currentPage > 1) {
           break CURRENT_PAGE_ATTEMPT
         }
